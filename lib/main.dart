@@ -1,4 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+import 'src/colorscheme.dart';
+import 'src/padding.dart';
+import 'src/buttons.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'middle of nowhere',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 42, 25, 1)),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 42, 25, 1), brightness: Brightness.dark),
+        useMaterial3: true
       ),
       home: const MyHomePage(),
     );
@@ -25,6 +29,22 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Oh balls'));
+    return Scaffold(
+      backgroundColor: context.cs.surface,
+      body: Center(child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PrimaryButton(
+            'start',
+            onPressed: (){},
+          ),
+          VPadding(50),
+          SecondaryButton(
+            'enter address manually',
+            onPressed: (){},
+          )
+        ],
+      )),
+    );
   }
 }
