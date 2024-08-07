@@ -123,7 +123,7 @@ class Overpass {
 
   Future<List<LatLng>> _getAllRoads(BBox box) async {
     // Anything we *don't* want to be close to - https://taginfo.openstreetmap.org/keys/highway#values
-    final roadTypes = ['road', 'motorway', 'primary', 'secondary', 'tertiary'];
+    final roadTypes = ['road', 'unclassified', 'motorway', 'primary', 'secondary', 'tertiary'];
     final document = await _overpassRequest('way["highway"~"${roadTypes.join('|')}"]${box.toOverpassString()};>;out;');
     return _getNodes(document);
   }

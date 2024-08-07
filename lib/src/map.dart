@@ -43,6 +43,19 @@ class _MapState extends State<Map> {
           userAgentPackageName: 'com.jaddison.middleofnowhere',
           tileProvider: CancellableNetworkTileProvider(),
         ),
+        MarkerLayer(
+          markers: widget.points.map((point) => Marker(
+            point: point,
+            width: 5,
+            height: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(5)
+              ),
+            )
+          )).toList()
+        ),
         Align(
           alignment: Alignment.bottomRight,
           child: InkWell(
