@@ -22,15 +22,25 @@ class BBox {
   double get minLng => min(start.longitude, end.longitude);
   double get maxLng => max(start.longitude, end.longitude);
 
+  LatLng get minCorner => LatLng(minLat, minLng);
+  LatLng get maxCorner => LatLng(maxLat, maxLng);
+
+  double get hypotenuseMetres => start.distanceTo(end);
+
   // Overpass takes lowest lat, lowest long, highest lat, highest long
   String toOverpassString() => '($minLat, $minLng, $maxLat, $maxLng)';
+
+  BBox expandSidesByMetres(double distance) => BBox(
+    minCorner.offsetBy(-distance, -distance),
+    maxCorner.offsetBy(distance, distance)
+  );
 
   List<BBox> split({required int divisions}) {
     final out = <BBox>[];
     final childHeight = (maxLat - minLat) / divisions;
     final childWidth = (maxLng - minLng) / divisions;
-    for (int dLat = 0; dLat < divisions; dLat++) {
-      for (int dLng = 0; dLng < divisions; dLng++) {
+    for (var dLat = 0; dLat < divisions; dLat++) {
+      for (var dLng = 0; dLng < divisions; dLng++) {
         out.add(BBox(
           LatLng(
             minLat + childHeight * dLat,
@@ -90,7 +100,6 @@ class Overpass {
     final response = await get(Uri.parse('https://overpass-api.de/api/interpreter?data=$query'));
     if (response.statusCode != 200) throw 'Unexpected Overpass response code ${response.statusCode}\n${response.body}';
     if (response.headers['content-type'] != 'application/osm3s+xml') throw 'Unexpected Overpass content type ${response.headers['content-type']}\n${response.body}';
-    // todo: check doc type
     return XmlDocument.parse(response.body);
   }
 
