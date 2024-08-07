@@ -15,10 +15,12 @@ class PrimaryButton extends StatelessWidget {
         color: context.cs.primary,
         shadowLightColor: context.cs.onSurface,
       ),
-      child: Text(text, style: TextStyle(
-        color: context.cs.onPrimary,
-        fontSize: fontSize
-      )),
+      child: Center(
+        child: Text(text, style: TextStyle(
+          color: context.cs.onPrimary,
+          fontSize: fontSize
+        )),
+      ),
       onPressed: onPressed,
     );
   }
@@ -38,10 +40,12 @@ class SecondaryButton extends StatelessWidget {
         color: context.cs.secondary,
         shadowLightColor: context.cs.onSurface,
       ),
-      child: Text(text, style: TextStyle(
-        color: context.cs.onSecondary,
-        fontSize: fontSize
-      )),
+      child: Center(
+        child: Text(text, style: TextStyle(
+          color: context.cs.onSecondary,
+          fontSize: fontSize
+        )),
+      ),
       onPressed: onPressed,
     );
   }

@@ -26,6 +26,18 @@ class BBox {
   LatLng get maxCorner => LatLng(maxLat, maxLng);
 
   double get hypotenuseMetres => start.distanceTo(end);
+  double get areaMetres => (
+    LatLng(minLat, minLng).distanceTo(LatLng(minLat, maxLng)) *
+    LatLng(minLat, minLng).distanceTo(LatLng(maxLat, minLng))
+  );
+
+  LatLng randomPoint() {
+    final rng = Random();
+    return LatLng(
+      minLat + rng.nextDouble() * (maxLat - minLat),
+      minLng + rng.nextDouble() * (maxLng - minLng)
+    );
+  }
 
   // Overpass takes lowest lat, lowest long, highest lat, highest long
   String toOverpassString() => '($minLat, $minLng, $maxLat, $maxLng)';
@@ -58,6 +70,8 @@ class BBox {
 }
 
 extension DistanceCalculations on LatLng {
+  String get toStringPretty => '(${latitude.abs().toStringAsFixed(6)}°${latitude.isNegative ? 'S' : 'N'} / ${longitude.abs().toStringAsFixed(6)}°${longitude.isNegative ? 'W' : 'E'})';
+
   static const earthRadius = 6371000; // in metres
   // Adapted from https://github.com/Ujjwalsharma2210/flutter_map_math/blob/d07096bf9e0a153d9c4d4a0e55799bff69f769fb/lib/flutter_geo_math.dart#L29
   double distanceTo(LatLng other) {
