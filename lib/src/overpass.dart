@@ -116,15 +116,21 @@ class Overpass {
     return out;
   }
 
-  Future<List<LatLng>> getAllBuildings(BBox box) async {
+  Future<List<LatLng>> _getAllBuildings(BBox box) async {
     final document = await _overpassRequest('way["building"]${box.toOverpassString()};>;out;');
     return _getNodes(document);
   }
 
-  Future<List<LatLng>> getAllRoads(BBox box) async {
+  Future<List<LatLng>> _getAllRoads(BBox box) async {
     // Anything we *don't* want to be close to - https://taginfo.openstreetmap.org/keys/highway#values
     final roadTypes = ['road', 'motorway', 'primary', 'secondary', 'tertiary'];
     final document = await _overpassRequest('way["highway"~"${roadTypes.join('|')}"]${box.toOverpassString()};>;out;');
     return _getNodes(document);
+  }
+
+  Future<List<LatLng>> getAllInfrastructure(BBox box) async {
+    final buildings = _getAllBuildings(box);
+    final roads = _getAllRoads(box);
+    return await buildings + await roads;
   }
 }

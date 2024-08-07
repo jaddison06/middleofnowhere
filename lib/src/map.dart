@@ -6,7 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'colorscheme.dart';
 
 class Map extends StatefulWidget {
-  const Map({super.key});
+  final List<LatLng> points;
+  final LatLng startPos;
+  const Map({super.key, required this.points, required this.startPos});
 
   @override
   State<Map> createState() => _MapState();
@@ -32,7 +34,7 @@ class _MapState extends State<Map> {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
-        initialCenter: LatLng(52.819210, 1.368957),
+        initialCenter: widget.startPos,
         initialZoom: 13
       ),
       children: [
