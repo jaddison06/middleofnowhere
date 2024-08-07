@@ -56,7 +56,7 @@ class MONEngine {
   }
 
   // For this to work correctly you gotta expand the OG box by nothingRadius and pass in surrounding infrastructure also
-  List<BBox> getCandidateAreas({required List<LatLng> infrastructure, required LatLng startPos})
+  Future<List<BBox>> getCandidateAreas({required List<LatLng> infrastructure, required LatLng startPos}) async
     => _getCandidatesInBox(area: _BBWithInfra(
       box: BBox.fromCenterWithDimensionsMetres(center: startPos, height: userRadius * 2, width: userRadius * 2),
       points: infrastructure

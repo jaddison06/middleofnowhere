@@ -16,7 +16,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  double nothingRadius = 280;
+  double nothingRadius = 220;
   double userRadius = 5000;
   // need this for the overpass call frfr
   final maxUserRadius = 15000.0;
@@ -36,6 +36,13 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     loadInfrastructure();
+  }
+
+  Future<void> updatePoints() async { 
+    final candidateBoxes = await MONEngine(nothingRadius: nothingRadius, userRadius: userRadius).getCandidateAreas(startPos: startPos, infrastructure: await infrastructure);
+    points.clear();
+    for (var box in candidateBoxes) points.addAll([box.minCorner, box.maxCorner]);
+    setState((){});
   }
 
   @override
@@ -58,46 +65,47 @@ class _MainPageState extends State<MainPage> {
     //   )),
     // );
     return Scaffold(
-      body: Center(
-        child: FutureWithDefault(
-          builder: () async {
-            points.clear();
-            final candidateBoxes = MONEngine(nothingRadius: nothingRadius, userRadius: userRadius).getCandidateAreas(startPos: startPos, infrastructure: await infrastructure);
-            for (var box in candidateBoxes) points.addAll([box.minCorner, box.maxCorner]);
-
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 800,
-                  child: Map(
-                    points: points,
-                    startPos: LatLng(52.819210, 1.368957)
+      body: Padding(
+        padding: EdgeInsets.all(15),
+        child: Center(
+          child: FutureWithDefault(
+            builder: () async {
+              return Column(
+                children: [
+                  Expanded(
+                    // height: 800,
+                    child: Map(
+                      points: points,
+                      startPos: LatLng(52.819210, 1.368957)
+                    ),
                   ),
-                ),
-                Slider(
-                  value: nothingRadius,
-                  min: 20,
-                  max: 10000,
-                  onChanged: (newVal) => setState(() {
-                    nothingRadius = newVal;
-            
-                  }),
-                ),
-                Slider(
-                  value: userRadius,
-                  label: '$userRadius',
-                  min: 700,
-                  max: maxUserRadius,
-                  onChanged: (newVal) => setState(() {
-                    userRadius = newVal;
-                  })
-                ),
-                Text('nothingRadius @${nothingRadius}m | userRadius @${userRadius}m | center @(${startPos.latitude}, ${startPos.longitude}) | points found: ${points.length}')
-              ],
-            );
-          }
-        )
+                  Slider(
+                    value: nothingRadius,
+                    min: 20,
+                    max: 10000,
+                    onChangeEnd: (newVal) {
+                      nothingRadius = newVal;
+                      updatePoints();
+                    },
+                    onChanged: (newVal) => setState(() => nothingRadius = newVal)
+                  ),
+                  Slider(
+                    value: userRadius,
+                    label: '$userRadius',
+                    min: 700,
+                    max: maxUserRadius,
+                    onChangeEnd: (newVal) {
+                      userRadius = newVal;
+                      updatePoints();
+                    },
+                    onChanged: (newVal) => setState(() => userRadius = newVal)
+                  ),
+                  Text('nothingRadius @${nothingRadius}m | userRadius @${userRadius}m | center @(${startPos.latitude}, ${startPos.longitude}) | points found: ${points.length}')
+                ],
+              );
+            }
+          )
+        ),
       ),
     );
   }
