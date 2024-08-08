@@ -22,6 +22,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void initState() {
     super.initState();
     engine = MONEngine(
+      // WHYYYYYY THE FUCKKKKK DOES THUS SHITTY CALLBACK ONLY REBUILD THE WIDGET WHEN IT FEELS LIKE IT
       onProgressUpdate: (newProgress) => setState(() => progress = newProgress),
       onLoadingMessageUpdate: (newMessage) => setState(() => message = newMessage)
     );
@@ -30,6 +31,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // print('BUILDING LOADINGSCREEN');
     return Scaffold(
       backgroundColor: context.cs.surface,
       body: Center(

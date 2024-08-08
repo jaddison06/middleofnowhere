@@ -75,7 +75,7 @@ class MONEngine {
   }
 
   // For this to work correctly you gotta expand the OG box by nothingRadius and pass in surrounding infrastructure also
-  Future<List<BBox>> getCandidateAreas({required List<LatLng> infrastructure, required LatLng startPos}) async
+  List<BBox> getCandidateAreas({required List<LatLng> infrastructure, required LatLng startPos}) 
     => _getCandidatesInBox(area: _BBWithInfra(
       box: BBox.fromCenterWithDimensionsMetres(center: startPos, height: _userRadius * 2, width: _userRadius * 2),
       points: infrastructure
@@ -101,7 +101,7 @@ class MONEngine {
     onProgressUpdate(_overpassDownloadBullshitPercentage);
     await _updateLoadingMessage('Finding some spots');
 
-    var candidates = await getCandidateAreas(infrastructure: infrastructure, startPos: userPos);
+    var candidates = getCandidateAreas(infrastructure: infrastructure, startPos: userPos);
     while (candidates.length < 4) {
       onProgressUpdate(0);
       await _updateLoadingMessage('Struggling to find somewhere - casting the net wider');

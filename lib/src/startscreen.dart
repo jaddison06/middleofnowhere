@@ -56,10 +56,10 @@ class _StartScreenState extends State<StartScreen> {
                   // widget.onHaveGotUserLocation(LatLng(location.latitude!, location.longitude!));
 
                   // London test location
-                  widget.onHaveGotUserLocation(LatLng(51.52085134900359, -0.25858847091567677));
+                  // widget.onHaveGotUserLocation(LatLng(51.52085134900359, -0.25858847091567677));
 
                   // Norfolk test location
-                  // widget.onHaveGotUserLocation(LatLng(52.8191919256764, 1.3689539378712867));
+                  widget.onHaveGotUserLocation(LatLng(52.8191919256764, 1.3689539378712867));
                 },
               ),
             ),

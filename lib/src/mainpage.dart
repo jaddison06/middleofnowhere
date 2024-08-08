@@ -19,10 +19,10 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     if (userPos == null) {
-      return StartScreen(onHaveGotUserLocation: (pos) => setState(() => userPos = pos));
+      return StartScreen(onHaveGotUserLocation: (userPos) => setState(() => this.userPos = userPos));
     }
     if (points == null) {
-      return LoadingScreen(userPos: userPos!, onHaveGotPoints: (points) => setState(() => points = points));
+      return LoadingScreen(userPos: userPos!, onHaveGotPoints: (points) => setState(() => this.points = points));
     }
     return ResultsScreen(points: points!, startPos: userPos!);
   }
