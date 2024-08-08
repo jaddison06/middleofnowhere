@@ -4,9 +4,9 @@ import 'map.dart';
 import 'colorscheme.dart';
 import 'buttons.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'padding.dart';
 import 'overpass.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 
 class ResultsScreen extends StatefulWidget {
   final List<LatLng> points;
@@ -17,19 +17,21 @@ class ResultsScreen extends StatefulWidget {
   State<ResultsScreen> createState() => _ResultsScreenState();
 }
 
-class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProviderStateMixin {
+class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateMixin {
   int? highlightedPoint;
   bool isSmallScreen(BuildContext context) => MediaQuery.of(context).size.width < 450;
   var showMenu = false;
 
-  late final MapController mapController;
+  late final AnimatedMapController mapController;
   late final AnimationController fabController;
   late final Animation<double> fabAnim;
 
   @override
   void initState() {
     super.initState();
-    mapController = MapController();
+    mapController = AnimatedMapController(
+      vsync: this,
+    );
     fabController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 450)
@@ -46,11 +48,11 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
   void onPointPressed(int pointID) => setState(() {
     if (highlightedPoint == pointID) {
       highlightedPoint = null;
-      mapController.move(widget.startPos, 13);
+      mapController.animateTo(dest: widget.startPos, zoom: 12);
     }
     else {
       highlightedPoint = pointID;
-      mapController.move(widget.points[pointID], 15);
+      mapController.animateTo(dest: widget.points[pointID], zoom: 15);
     }
   });
 
@@ -72,7 +74,7 @@ class _ResultsScreenState extends State<ResultsScreen> with SingleTickerProvider
         children: [
           Expanded(
             child: Map(
-              controller: mapController,
+              controller: mapController.mapController,
               startPos: widget.startPos,
               points: widget.points,
               highlightedPoint: highlightedPoint,

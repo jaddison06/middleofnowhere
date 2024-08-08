@@ -28,7 +28,7 @@ class _MapState extends State<Map> {
         mapController: widget.controller,
         options: MapOptions(
           initialCenter: widget.startPos,
-          initialZoom: 13
+          initialZoom: 12
         ),
         children: [
           TileLayer(

@@ -98,7 +98,7 @@ packages:
     source: hosted
     version: "1.1.0"
   dio:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: dio
       sha256: e17f6b3097b8c51b72c74c9f071a605c47bcc8893839bd66732457a5ebe73714
@@ -150,6 +150,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.2"
+  flutter_map_animations:
+    dependency: "direct main"
+    description:
+      name: flutter_map_animations
+      sha256: "826c10a551d9dbb686a8ed9ee8815b974475812c41beb4ce9fe19095fe1c5611"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   flutter_map_cancellable_tile_provider:
     dependency: "direct main"
     description:
@@ -176,16 +184,8 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  geocode:
-    dependency: "direct main"
-    description:
-      name: geocode
-      sha256: cf9727c369bb3703b97d6e440225962dc27b7f3c686662fe3cdcc91cbfb7074d
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   http:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010

@@ -35,7 +35,7 @@ class MONEngine {
   final void Function(String) onLoadingMessageUpdate;
   MONEngine({required this.onProgressUpdate, required this.onLoadingMessageUpdate});
 
-  final _overpassDownloadBullshitPercentage = 0.2;
+  final _overpassDownloadBullshitPercentage = 0.3;
 
   var _areaCovered = 0.0;
   var _userRadius = 5000.0;
@@ -82,7 +82,8 @@ class MONEngine {
     ));
   
   Future<List<LatLng>> _getInfrastructure(LatLng userPos) => Overpass().getAllInfrastructure(
-      BBox.fromCenterWithDimensionsMetres(center: userPos, width: _userRadius * 2, height: _userRadius * 2).expandSidesByMetres(_nothingRadius)
+      BBox.fromCenterWithDimensionsMetres(center: userPos, width: _userRadius * 2, height: _userRadius * 2).expandSidesByMetres(_nothingRadius),
+      (progress) => onProgressUpdate(progress * _overpassDownloadBullshitPercentage)
     );
 
   Future<void> _updateLoadingMessage(String msg) {
@@ -101,7 +102,7 @@ class MONEngine {
     await _updateLoadingMessage('Finding some spots');
 
     var candidates = await getCandidateAreas(infrastructure: infrastructure, startPos: userPos);
-    while (candidates.length < 5) {
+    while (candidates.length < 4) {
       onProgressUpdate(0);
       await _updateLoadingMessage('Struggling to find somewhere - casting the net wider');
 

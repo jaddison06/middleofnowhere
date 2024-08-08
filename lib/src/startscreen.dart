@@ -4,7 +4,7 @@ import 'padding.dart';
 import 'colorscheme.dart';
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geocode/geocode.dart';
+import 'package:dio/dio.dart';
 
 class StartScreen extends StatefulWidget {
   final void Function(LatLng) onHaveGotUserLocation;
@@ -52,8 +52,14 @@ class _StartScreenState extends State<StartScreen> {
                 'start',
                 onPressed: () async {
                   setState(() => showStartButton = false);
-                  final location = await Location().getLocation();
-                  widget.onHaveGotUserLocation(LatLng(location.latitude!, location.longitude!));
+                  // final location = await Location().getLocation();
+                  // widget.onHaveGotUserLocation(LatLng(location.latitude!, location.longitude!));
+
+                  // London test location
+                  widget.onHaveGotUserLocation(LatLng(51.52085134900359, -0.25858847091567677));
+
+                  // Norfolk test location
+                  // widget.onHaveGotUserLocation(LatLng(52.8191919256764, 1.3689539378712867));
                 },
               ),
             ),
@@ -86,8 +92,10 @@ class _StartScreenState extends State<StartScreen> {
                       controller: addressInput,
                       focusNode: addressFocus,
                       onSubmitted: (address) async {
-                        final coords = await GeoCode().forwardGeocoding(address: address);
-                        widget.onHaveGotUserLocation(LatLng(coords.latitude!, coords.longitude!));
+                        // https://github.com/imvalient/geocode/blob/b5cf4898df587f135077fbd406bdf33f5b93901e/lib/src/service/geocode_client.dart#L52
+                        final uri = Uri.https('geocode.xyz', '/${address.replaceAll(' ', '+')}', {'geoit': 'json'});
+                        final res = await Dio().getUri(uri);
+                        widget.onHaveGotUserLocation(LatLng(double.parse(res.data['latt']), double.parse(res.data['longt'])));
                       }
                     )
                   )

@@ -1,7 +1,7 @@
-import 'package:http/http.dart';
 import 'dart:math';
 import 'package:xml/xml.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:dio/dio.dart';
 
 class BBox {
   final LatLng start, end;
@@ -110,11 +110,14 @@ extension DistanceCalculations on LatLng {
 }
 
 class Overpass {
-  Future<XmlDocument> _overpassRequest(String query) async {
-    final response = await get(Uri.parse('https://overpass-api.de/api/interpreter?data=$query'));
-    if (response.statusCode != 200) throw 'Unexpected Overpass response code ${response.statusCode}\n${response.body}';
-    if (response.headers['content-type'] != 'application/osm3s+xml') throw 'Unexpected Overpass content type ${response.headers['content-type']}\n${response.body}';
-    return XmlDocument.parse(response.body);
+  Future<XmlDocument> _overpassRequest(String query, void Function(double) onProgressUpdate) async {
+    final response = await Dio().get(
+      'https://overpass-api.de/api/interpreter?data=$query',
+      onReceiveProgress: (count, total) { if (total > 0) onProgressUpdate(count / total); }
+    );
+    if (response.statusCode != 200) throw 'Unexpected Overpass response code ${response.statusCode}\n${response.data}';
+    if (response.headers.value('content-type') != 'application/osm3s+xml') throw 'Unexpected Overpass content type ${response.headers['content-type']}\n${response.data}';
+    return XmlDocument.parse(response.data);
   }
 
   List<LatLng> _getNodes(XmlDocument document) {
@@ -130,21 +133,26 @@ class Overpass {
     return out;
   }
 
-  Future<List<LatLng>> _getAllBuildings(BBox box) async {
-    final document = await _overpassRequest('way["building"]${box.toOverpassString()};>;out;');
+  Future<List<LatLng>> _getAllBuildings(BBox box, void Function(double) onProgressUpdate) async {
+    final document = await _overpassRequest('way["building"]${box.toOverpassString()};>;out;', onProgressUpdate);
     return _getNodes(document);
   }
 
-  Future<List<LatLng>> _getAllRoads(BBox box) async {
+  Future<List<LatLng>> _getAllRoads(BBox box, void Function(double) onProgressUpdate) async {
     // Anything we *don't* want to be close to - https://taginfo.openstreetmap.org/keys/highway#values
     final roadTypes = ['road', 'unclassified', 'motorway', 'primary', 'secondary', 'tertiary'];
-    final document = await _overpassRequest('way["highway"~"${roadTypes.join('|')}"]${box.toOverpassString()};>;out;');
+    final document = await _overpassRequest('way["highway"~"${roadTypes.join('|')}"]${box.toOverpassString()};>;out;', onProgressUpdate);
     return _getNodes(document);
   }
 
-  Future<List<LatLng>> getAllInfrastructure(BBox box) async {
-    final buildings = _getAllBuildings(box);
-    final roads = _getAllRoads(box);
+  Future<List<LatLng>> getAllInfrastructure(BBox box, void Function(double) onProgressUpdate) async {
+    final progressCounters = [0.0, 0.0];
+    void _onProgressUpdate(int jobID, double progress) {
+      progressCounters[jobID] = progress;
+      onProgressUpdate(progressCounters.reduce((a, b) => a + b) / progressCounters.length);
+    }
+    final buildings = _getAllBuildings(box, (p) => _onProgressUpdate(0, p));
+    final roads = _getAllRoads(box, (p) => _onProgressUpdate(1, p));
     return await buildings + await roads;
   }
 }
