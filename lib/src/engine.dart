@@ -38,8 +38,8 @@ class MONEngine {
   final _overpassDownloadBullshitPercentage = 0.3;
 
   var _areaCovered = 0.0;
-  var _userRadius = 5000.0;
-  var _nothingRadius = 235.0;
+  var _userRadius = 4500.0;
+  var _nothingRadius = 230.0;
 
   void _updateProgressByArea(double area) {
     _areaCovered += area;
@@ -52,22 +52,20 @@ class MONEngine {
 
   // Find all boxes that contain NO points within nothingRadius of infrastructure
   List<BBox> _getCandidatesInBox({required _BBWithInfra area}) {
-    // Check if any infrastructure inside this box or within nothingRadius of edges
-    for (var node in area.points) {
-      if (node.containedBy(area.box.expandSidesByMetres(_nothingRadius))) {
-        if (area.box.hypotenuseMetres <= _nothingRadius) {
-          // Max distance across box is smaller than minimum distance from infrastructure therefore no valid points in the box
-          // Technically slightly invalid bcos infra within nothingRadius of a corner could be far enough away from opposite
-          // corner but that makes the base case really complicated for very little added usefulness
-          _updateProgressByArea(area.box.areaMetres);
-          return [];
-        }
-
-        // Infrastructure in box (or within nothingRadius of corners) but division still useful - recurse!!
-        return area.split(divisions: 2, nothingRadius: _nothingRadius)
-          .map((area) => _getCandidatesInBox(area: area))
-          .reduce((a, b) => a + b);
+    // Is any infrastructure inside this box or within nothingRadius of edges?
+    if (area.points.isNotEmpty /* source: trust me bro */) {
+      if (area.box.hypotenuseMetres <= _nothingRadius) {
+        // Max distance across box is smaller than minimum distance from infrastructure therefore no valid points in the box
+        // Technically slightly invalid bcos infra within nothingRadius of a corner could be far enough away from opposite
+        // corner but that makes the base case really complicated for very little added usefulness
+        _updateProgressByArea(area.box.areaMetres);
+        return [];
       }
+
+      // Infrastructure in box (or within nothingRadius of corners) but division still useful - recurse!!
+      return area.split(divisions: 2, nothingRadius: _nothingRadius)
+        .map((area) => _getCandidatesInBox(area: area))
+        .reduce((a, b) => a + b);
     }
     // No infrastructure in box or within nothingRadius - we're good here!!
     _updateProgressByArea(area.box.areaMetres);

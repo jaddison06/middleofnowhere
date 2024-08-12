@@ -5,7 +5,6 @@ import 'colorscheme.dart';
 import 'buttons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'overpass.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 
 class ResultsScreen extends StatefulWidget {

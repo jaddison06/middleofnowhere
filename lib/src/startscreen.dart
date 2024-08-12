@@ -17,6 +17,7 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   var showStartButton = true;
   var showAddressBox = false;
+  var isLoading = false;
 
   late final TextEditingController addressInput;
   late final FocusNode addressFocus;
@@ -51,7 +52,7 @@ class _StartScreenState extends State<StartScreen> {
               child: PrimaryButton(''
                 'start',
                 onPressed: () async {
-                  setState(() => showStartButton = false);
+                  setState(() { showStartButton = false; isLoading = true; });
                   final location = await Location().getLocation();
                   widget.onHaveGotUserLocation(LatLng(location.latitude!, location.longitude!));
 
@@ -92,6 +93,8 @@ class _StartScreenState extends State<StartScreen> {
                       controller: addressInput,
                       focusNode: addressFocus,
                       onSubmitted: (address) async {
+                        setState(() => isLoading = true);
+                        // Adapted from below plugin but without the fucking weird shit that makes CORS eat shit
                         // https://github.com/imvalient/geocode/blob/b5cf4898df587f135077fbd406bdf33f5b93901e/lib/src/service/geocode_client.dart#L52
                         final uri = Uri.https('geocode.xyz', '/${address.replaceAll(' ', '+')}', {'geoit': 'json'});
                         final res = await Dio().getUri(uri);
@@ -101,6 +104,12 @@ class _StartScreenState extends State<StartScreen> {
                   )
                 ],
               ),
+            ),
+            VPadding(25),
+            Container(
+              width: 30,
+              height: 30,
+              child: isLoading ? CircularProgressIndicator(strokeWidth: 3,) : null
             )
           ],
         ),
